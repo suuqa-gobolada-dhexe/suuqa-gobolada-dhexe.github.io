@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suuqa Gobolada Dhexe</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+
+:root {
+  --bg: #0d0d0d;
+  --surface: #161616;
+  --surface2: #1e1e1e;
+  --border: #2a2a2a;
+  --gold: #c9a84c;
+  --gold-dim: #8a6e2f;
+  --green: #00c896;
+  --red: #ff4d4d;
+  --neutral: #888;
+  --text: #f0f0f0;
+  --text2: #999;
+  --white: #ffffff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* TICKER */
+.ticker {
+  background: #111;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  padding: 7px 0;
+}
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: tick 35s linear infinite;
+}
+.ticker-item {
+  padding: 0 28px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: 0.3px;
+}
+.ticker-item .name { color: var(--gold); margin-right: 6px; }
+.ticker-item .up { color: var(--green); }
+.ticker-item .dn { color: var(--red); }
+.ticker-item .nt { color: var(--neutral); }
+@keyframes tick { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+/* HEADER */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 200;
+}
+.header-wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 16px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-icon {
+  width: 32px; height: 32px;
+  background: var(--gold);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.brand-name { font-size: 13px; font-weight: 700; color: var(--white); }
+.brand-sub { font-size: 10px; color: var(--text2); margin-top: 1px; }
+
+.nav { display: flex; gap: 2px; }
+.nav-btn {
+  background: none; border: none;
+  color: var(--text2);
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.nav-btn:hover { color: var(--text); background: var(--surface2); }
+.nav-btn.active { color: var(--gold); background: rgba(201,168,76,0.1); }
+
+/* LAYOUT */
+.wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* PAGE */
+.page { display: none; }
+.page.on { display: block; }
+
+/* HERO BAR */
+.hero-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hero-left h2 { font-size: 16px; font-weight: 700; color: var(--white); }
+.hero-left p { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.hero-stats { display: flex; gap: 24px; }
+.hstat { text-align: center; }
+.hstat-val { font-size: 18px; font-weight: 900; color: var(--gold); }
+.hstat-lbl { font-size: 10px; color: var(--text2); margin-top: 2px; }
+
+/* CITY PILLS */
+.city-row {
+  display: flex; gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 14px;
+  scrollbar-width: none;
+}
+.city-row::-webkit-scrollbar { display: none; }
+.city-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 11px; font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.city-pill:hover { border-color: var(--gold-dim); color: var(--gold); }
+.city-pill.on {
+  background: rgba(201,168,76,0.12);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* SECTION LABEL */
+.sec-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin: 16px 0 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sec-lbl::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* PRICE TABLE */
+.price-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.price-table-hdr {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1fr 1fr 2fr;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.price-table-hdr span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+.price-row {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1fr 1fr 2fr;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  transition: background 0.1s;
+}
+.price-row:last-child { border-bottom: none; }
+.price-row:hover { background: var(--surface2); }
+
+.pr-name { display: flex; align-items: center; gap: 8px; }
+.pr-emoji { font-size: 16px; }
+.pr-n { font-size: 13px; font-weight: 600; color: var(--white); }
+.pr-sub { font-size: 10px; color: var(--text2); margin-top: 1px; }
+
+.pr-price { font-size: 15px; font-weight: 700; color: var(--white); font-variant-numeric: tabular-nums; }
+
+.pr-chg { font-size: 12px; font-weight: 600; }
+.pr-chg.up { color: var(--green); }
+.pr-chg.dn { color: var(--red); }
+.pr-chg.nt { color: var(--neutral); }
+
+.pr-pct { font-size: 11px; font-weight: 600; }
+.pr-pct.up { color: var(--green); }
+.pr-pct.dn { color: var(--red); }
+.pr-pct.nt { color: var(--neutral); }
+
+.pr-chart { height: 36px; }
+
+/* MARKET SUMMARY CARDS */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.sum-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+.sum-card .label { font-size: 10px; color: var(--text2); letter-spacing: 0.5px; text-transform: uppercase; }
+.sum-card .value { font-size: 20px; font-weight: 900; color: var(--gold); margin-top: 4px; }
+.sum-card .detail { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+/* NEWS */
+.news-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.news-top {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.news-city-tag {
+  background: rgba(201,168,76,0.15);
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px;
+  letter-spacing: 0.5px;
+}
+.news-time { font-size: 10px; color: var(--text2); }
+.news-body { font-size: 13px; line-height: 1.6; color: var(--text); }
+
+/* LISTINGS */
+.listing-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 14px;
+}
+.listing-icon {
+  width: 52px; height: 52px;
+  background: var(--surface2);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.listing-body { flex: 1; }
+.listing-name { font-size: 14px; font-weight: 700; color: var(--white); }
+.listing-meta { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.listing-price { font-size: 16px; font-weight: 900; color: var(--gold); margin-top: 5px; }
+.listing-loc { font-size: 10px; color: var(--text2); margin-top: 2px; }
+.wa-btn {
+  background: #128c7e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+.wa-btn:hover { opacity: 0.85; }
+
+/* ADMIN */
+.admin-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+}
+.admin-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 14px;
+}
+.admin-card h3 { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 16px; }
+
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 5px; letter-spacing: 0.3px; }
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  outline: none;
+  transition: border 0.15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--gold);
+}
+.field textarea { resize: none; height: 80px; }
+.field select option { background: var(--surface2); }
+
+.inp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.btn {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: opacity 0.15s;
+  margin-bottom: 8px;
+}
+.btn:hover { opacity: 0.88; }
+.btn-gold { background: var(--gold); color: #000; }
+.btn-green { background: #0f7a5a; color: white; }
+.btn-outline { background: none; border: 1px solid var(--border); color: var(--text2); }
+
+.toast {
+  background: #0f7a5a;
+  color: white;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px; font-weight: 600;
+  margin-bottom: 12px;
+  display: none;
+}
+.toast.on { display: block; }
+
+.admin-hidden { display: none; }
+.admin-visible { display: block; }
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-wrap">
+    <div class="brand">
+      <div class="brand-icon">🐐</div>
+      <div>
+        <div class="brand-name">Suuqa Gobolada Dhexe</div>
+        <div class="brand-sub">Somalia Livestock Market · Live Prices</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="goPage('market',this)">📊 Suuqa</button>
+      <button class="nav-btn" onclick="goPage('news',this)">📰 Wararka</button>
+      <button class="nav-btn" onclick="goPage('listings',this)">🛒 Iibinta</button>
+      <button class="nav-btn" onclick="goPage('admin',this)">⚙️ Admin</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== MARKET PAGE ===== -->
+<div class="page on" id="page-market">
+<div class="wrap">
+
+  <div class="hero-bar">
+    <div class="hero-left">
+      <h2>Suuqa Xoolaha — Gobolada Dhexe</h2>
+      <p id="heroDate">Qiimaha maanta</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-val">8</div><div class="hstat-lbl">Magaalo</div></div>
+      <div class="hstat"><div class="hstat-val">7</div><div class="hstat-lbl">Nooc</div></div>
+      <div class="hstat"><div class="hstat-val" id="heroTime">--:--</div><div class="hstat-lbl">Update</div></div>
+    </div>
+  </div>
+
+  <div class="city-row" id="cityRow"></div>
+
+  <div class="summary-grid" id="summaryGrid"></div>
+
+  <div class="sec-lbl">Qiimaha Xoolaha — <span id="cityLabel">Gaalkacyo</span></div>
+
+  <div class="price-table">
+    <div class="price-table-hdr">
+      <span>Xoolaha</span>
+      <span>Qiimaha</span>
+      <span>Isbedel</span>
+      <span>%</span>
+      <span>Toddobaadka</span>
+    </div>
+    <div id="priceRows"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===== NEWS PAGE ===== -->
+<div class="page" id="page-news">
+<div class="wrap">
+  <div class="sec-lbl">Wararka Suuqa</div>
+  <div id="newsContainer"></div>
+</div>
+</div>
+
+<!-- ===== LISTINGS PAGE ===== -->
+<div class="page" id="page-listings">
+<div class="wrap">
+  <div class="sec-lbl">Xoolaha La Iibinayo</div>
+  <div id="listingsContainer"></div>
+</div>
+</div>
+
+<!-- ===== ADMIN PAGE ===== -->
+<div class="page" id="page-admin">
+<div class="wrap">
+<div class="admin-wrap">
+
+  <!-- LOGIN -->
+  <div id="adminLogin">
+    <div class="admin-card">
+      <h3>🔐 Maamulka Suuqa</h3>
+      <div class="field">
+        <label>PASSWORD</label>
+        <input type="password" id="passInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-gold" onclick="doLogin()">Gal →</button>
+      <p style="font-size:10px;color:var(--text2);text-align:center;margin-top:8px;">Default password: suuqa2026</p>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div id="adminPanel" class="admin-hidden">
+
+    <div class="toast" id="toast">✅ Si guul leh ayaa loo keydiiyay!</div>
+
+    <!-- PRICE UPDATE -->
+    <div class="admin-card">
+      <h3>📊 Cusboonaysii Qiimaha</h3>
+      <div class="field">
+        <label>MAGAALADA</label>
+        <select id="aCity">
+          <option>Gaalkacyo</option><option>Dhuusamarreeb</option>
+          <option>Cadaado</option><option>Guraceel</option>
+          <option>Balanbale</option><option>Caabudwaaq</option>
+          <option>Bandiiradlay</option><option>Galinsoor</option>
+        </select>
+      </div>
+      <div class="inp-grid">
+        <div class="field"><label>🐐 ORGI WAYN ($)</label><input type="number" id="f_ow" placeholder="105"></div>
+        <div class="field"><label>🐐 ORGI YAR ($)</label><input type="number" id="f_oy" placeholder="38"></div>
+        <div class="field"><label>🐑 RI WAYN ($)</label><input type="number" id="f_rw" placeholder="65"></div>
+        <div class="field"><label>🐑 RI YAR ($)</label><input type="number" id="f_ry" placeholder="42"></div>
+        <div class="field"><label>🐔 DIGAAG ($)</label><input type="number" id="f_dg" placeholder="17"></div>
+        <div class="field"><label>🍗 HILIB ($)</label><input type="number" id="f_hl" placeholder="11"></div>
+        <div class="field"><label>🥚 UKUN ($)</label><input type="number" step="0.01" id="f_uk" placeholder="0.27"></div>
+      </div>
+      <button class="btn btn-gold" onclick="savePrice()">💾 Keydi Qiimaha</button>
+    </div>
+
+    <!-- NEWS -->
+    <div class="admin-card">
+      <h3>📰 War Cusub Ku Qor</h3>
+      <div class="field">
+        <label>MAGAALADA</label>
+        <select id="nCity">
+          <option>Gaalkacyo</option><option>Dhuusamarreeb</option>
+          <option>Cadaado</option><option>Guraceel</option>
+          <option>Balanbale</option><option>Caabudwaaq</option>
+          <option>Bandiiradlay</option><option>Galinsoor</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>WARKA</label>
+        <textarea id="nText" placeholder="Xaaladda suuqa maanta..."></textarea>
+      </div>
+      <button class="btn btn-green" onclick="saveNews()">📤 Baahso</button>
+    </div>
+
+    <!-- LISTING -->
+    <div class="admin-card">
+      <h3>🛒 Listing Cusub</h3>
+      <div class="inp-grid">
+        <div class="field">
+          <label>NOOCA XOOLAHA</label>
+          <select id="lType">
+            <option value="🐐 Orgi Wayn">🐐 Orgi Wayn</option>
+            <option value="🐐 Orgi Yar">🐐 Orgi Yar</option>
+            <option value="🐑 Ri Wayn">🐑 Ri Wayn</option>
+            <option value="🐑 Ri Yar">🐑 Ri Yar</option>
+            <option value="🐔 Digaag">🐔 Digaag</option>
+          </select>
+        </div>
+        <div class="field"><label>TIRO (MADAX)</label><input type="number" id="lQty" placeholder="5"></div>
+        <div class="field"><label>QIIMAHA ($)</label><input type="number" id="lPrice" placeholder="100"></div>
+        <div class="field"><label>WHATSAPP</label><input type="text" id="lWA" placeholder="252612345678"></div>
+      </div>
+      <div class="field">
+        <label>MAGAALADA</label>
+        <select id="lCity">
+          <option>Gaalkacyo</option><option>Dhuusamarreeb</option>
+          <option>Cadaado</option><option>Guraceel</option>
+          <option>Balanbale</option><option>Caabudwaaq</option>
+          <option>Bandiiradlay</option><option>Galinsoor</option>
+        </select>
+      </div>
+      <button class="btn btn-green" onclick="saveListing()">➕ Ku Dar</button>
+    </div>
+
+    <button class="btn btn-outline" onclick="doLogout()">🚪 Ka Bax</button>
+  </div>
+
+</div>
+</div>
+</div>
+
+<script>
+// ============ DATA ============
+const CITIES = ['Gaalkacyo','Dhuusamarreeb','Cadaado','Guraceel','Balanbale','Caabudwaaq','Bandiiradlay','Galinsoor'];
+const ANIMALS = [
+  {key:'ow', emoji:'🐐', name:'Orgi Wayn', sub:'Male Goat · Large'},
+  {key:'oy', emoji:'🐐', name:'Orgi Yar',  sub:'Male Goat · Small'},
+  {key:'rw', emoji:'🐑', name:'Ri Wayn',   sub:'Female Goat · Large'},
+  {key:'ry', emoji:'🐑', name:'Ri Yar',    sub:'Female Goat · Small'},
+  {key:'dg', emoji:'🐔', name:'Digaag',    sub:'Live Chicken'},
+  {key:'hl', emoji:'🍗', name:'Hilib',     sub:'Chicken Meat/kg'},
+  {key:'uk', emoji:'🥚', name:'Ukun',      sub:'Egg (1 piece)'},
+];
+
+const BASE = {
+  Gaalkacyo:    {ow:105,oy:38,rw:68,ry:45,dg:17,hl:12,uk:0.28},
+  Dhuusamarreeb:{ow:98, oy:35,rw:65,ry:42,dg:16,hl:11,uk:0.27},
+  Cadaado:      {ow:100,oy:36,rw:62,ry:40,dg:17,hl:11,uk:0.26},
+  Guraceel:     {ow:95, oy:33,rw:60,ry:38,dg:15,hl:10,uk:0.25},
+  Balanbale:    {ow:92, oy:32,rw:58,ry:37,dg:15,hl:10,uk:0.27},
+  Caabudwaaq:   {ow:97, oy:34,rw:63,ry:41,dg:16,hl:11,uk:0.26},
+  Bandiiradlay: {ow:90, oy:31,rw:57,ry:36,dg:14,hl:10,uk:0.25},
+  Galinsoor:    {ow:93, oy:33,rw:59,ry:38,dg:15,hl:10,uk:0.26},
+};
+
+let prices = JSON.parse(localStorage.getItem('sgd2_prices') || 'null') || JSON.parse(JSON.stringify(BASE));
+let prevPrices = JSON.parse(localStorage.getItem('sgd2_prev') || 'null') || JSON.parse(JSON.stringify(BASE));
+let newsArr = JSON.parse(localStorage.getItem('sgd2_news') || '[]');
+let listArr = JSON.parse(localStorage.getItem('sgd2_list') || '[]');
+let activeCity = 'Gaalkacyo';
+let chartInstances = {};
+
+// ============ INIT ============
+function init() {
+  const now = new Date();
+  const days = ['Axad','Isniin','Talaado','Arbaco','Khamiis','Jimce','Sabti'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('heroDate').textContent =
+    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('heroTime').textContent =
+    `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  buildCityRow();
+  buildSummary();
+  buildPriceTable(activeCity);
+  buildTicker();
+  buildNews();
+  buildListings();
+}
+
+function pad(n){ return String(n).padStart(2,'0'); }
+
+// ============ CITY ROW ============
+function buildCityRow() {
+  const row = document.getElementById('cityRow');
+  row.innerHTML = CITIES.map(c => `
+    <button class="city-pill ${c===activeCity?'on':''}" onclick="switchCity('${c}')">${c}</button>
+  `).join('');
+}
+
+function switchCity(city) {
+  activeCity = city;
+  document.getElementById('cityLabel').textContent = city;
+  buildCityRow();
+  buildSummary();
+  buildPriceTable(city);
+}
+
+// ============ SUMMARY ============
+function buildSummary() {
+  const p = prices[activeCity];
+  const prev = prevPrices[activeCity];
+  const avgGoat = ((p.ow + p.oy + p.rw + p.ry) / 4).toFixed(0);
+  const avgChicken = ((p.dg + p.hl) / 2).toFixed(0);
+  const totalChange = ANIMALS.reduce((s,a) => {
+    const d = p[a.key] - prev[a.key];
+    return s + (d > 0 ? 1 : d < 0 ? -1 : 0);
+  }, 0);
+  const trend = totalChange > 0 ? '▲ Kor' : totalChange < 0 ? '▼ Hoos' : '→ Xasiloon';
+  const tcolor = totalChange > 0 ? 'var(--green)' : totalChange < 0 ? 'var(--red)' : 'var(--neutral)';
+
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="sum-card">
+      <div class="label">Celceliska Ariga</div>
+      <div class="value">$${avgGoat}</div>
+      <div class="detail">Orgi + Ri — 4 nooc</div>
+    </div>
+    <div class="sum-card">
+      <div class="label">Celceliska Digaaga</div>
+      <div class="value">$${avgChicken}</div>
+      <div class="detail">Nool + Hilib</div>
+    </div>
+    <div class="sum-card">
+      <div class="label">Xaaladda Suuqa</div>
+      <div class="value" style="color:${tcolor};font-size:16px;">${trend}</div>
+      <div class="detail">${activeCity} — Maanta</div>
+    </div>
+  `;
+}
+
+// ============ PRICE TABLE ============
+function buildPriceTable(city) {
+  // Destroy old charts
+  Object.values(chartInstances).forEach(c => { try{c.destroy()}catch(e){} });
+  chartInstances = {};
+
+  const p = prices[city];
+  const prev = prevPrices[city];
+
+  const rows = ANIMALS.map(a => {
+    const val = p[a.key];
+    const pval = prev[a.key];
+    const diff = +(val - pval).toFixed(2);
+    const pct = pval > 0 ? ((diff/pval)*100).toFixed(1) : '0.0';
+    const dir = diff > 0 ? 'up' : diff < 0 ? 'dn' : 'nt';
+    const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '—';
+    const sign = diff > 0 ? '+' : '';
+    const chartId = `chart_${a.key}`;
+
+    return `
+    <div class="price-row">
+      <div class="pr-name">
+        <span class="pr-emoji">${a.emoji}</span>
+        <div>
+          <div class="pr-n">${a.name}</div>
+          <div class="pr-sub">${a.sub}</div>
+        </div>
+      </div>
+      <div class="pr-price">$${val}</div>
+      <div class="pr-chg ${dir}">${arrow} ${sign}${diff}</div>
+      <div class="pr-pct ${dir}">${sign}${pct}%</div>
+      <div class="pr-chart"><canvas id="${chartId}"></canvas></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('priceRows').innerHTML = rows;
+
+  // Draw charts
+  ANIMALS.forEach(a => {
+    const val = p[a.key];
+    const pval = prev[a.key];
+    const diff = val - pval;
+    const color = diff > 0 ? '#00c896' : diff < 0 ? '#ff4d4d' : '#888';
+    const spark = makeSpark(val, 7);
+    const ctx = document.getElementById(`chart_${a.key}`);
+    if (!ctx) return;
+    chartInstances[a.key] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: spark.map((_,i)=>i),
+        datasets:[{
+          data: spark,
+          borderColor: color,
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: true,
+          backgroundColor: color+'18',
+          tension: 0.4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins:{legend:{display:false},tooltip:{enabled:false}},
+        scales:{x:{display:false},y:{display:false}},
+        animation:{duration:300},
+      }
+    });
+  });
+}
+
+function makeSpark(end, n) {
+  const arr = [];
+  let v = end * (0.88 + Math.random()*0.08);
+  for(let i=0;i<n-1;i++){
+    arr.push(parseFloat(v.toFixed(2)));
+    v *= (0.97 + Math.random()*0.06);
+  }
+  arr.push(end);
+  return arr;
+}
+
+// ============ TICKER ============
+function buildTicker() {
+  const items = [];
+  CITIES.forEach(city => {
+    ANIMALS.slice(0,4).forEach(a => {
+      const val = prices[city][a.key];
+      const prev = prevPrices[city][a.key];
+      const diff = val - prev;
+      const dir = diff > 0 ? 'up' : diff < 0 ? 'dn' : 'nt';
+      const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '→';
+      items.push(`<span class="ticker-item"><span class="name">${a.emoji} ${a.name} · ${city}</span> $${val} <span class="${dir}">${arrow}</span></span>`);
+    });
+  });
+  const html = items.join('') + items.join('');
+  document.getElementById('tickerTrack').innerHTML = html;
+}
+
+// ============ NEWS ============
+function buildNews() {
+  const container = document.getElementById('newsContainer');
+  const defaultNews = [
+    {city:'Gaalkacyo', time:'08:30', text:'Suuqa Gaalkacyo maanta wuu furan yahay. Orgiga weyni wuu kor u kacay. Ganacsatada badan ayaa yimid.'},
+    {city:'Dhuusamarreeb', time:'09:00', text:'Dhuusamarreeb suuqa toddobaadkan wuu firfircoon yahay. Digaaga qiimihiisu wuu xasiloon yahay.'},
+    {city:'Cadaado', time:'09:30', text:'Cadaado ri-yarta iyo orgiga yar ayaa kor u kacay qiimo ahaan toddobaadkan.'},
+  ];
+  const all = [...newsArr, ...defaultNews];
+  container.innerHTML = all.map(n => `
+    <div class="news-item">
+      <div class="news-top">
+        <span class="news-city-tag">${n.city}</span>
+        <span class="news-time">${n.time || 'Maanta'}</span>
+      </div>
+      <div class="news-body">${n.text}</div>
+    </div>
+  `).join('');
+}
+
+// ============ LISTINGS ============
+function buildListings() {
+  const container = document.getElementById('listingsContainer');
+  const emojiMap = {'🐐 Orgi Wayn':'🐐','🐐 Orgi Yar':'🐐','🐑 Ri Wayn':'🐑','🐑 Ri Yar':'🐑','🐔 Digaag':'🐔'};
+  const defaultList = [
+    {type:'🐐 Orgi Wayn', qty:3, price:105, city:'Gaalkacyo', wa:'252612345678'},
+    {type:'🐑 Ri Wayn', qty:5, price:68, city:'Dhuusamarreeb', wa:'252612345679'},
+    {type:'🐔 Digaag', qty:20, price:17, city:'Cadaado', wa:'252612345680'},
+  ];
+  const all = [...listArr, ...defaultList];
+  container.innerHTML = all.map(l => {
+    const em = emojiMap[l.type] || '🐐';
+    return `
+    <div class="listing-item">
+      <div class="listing-icon">${em}</div>
+      <div class="listing-body">
+        <div class="listing-name">${l.type}</div>
+        <div class="listing-meta">Tiro: ${l.qty} Madax · Caafimaad: Wanaagsan</div>
+        <div class="listing-price">$${l.price} / mid</div>
+        <div class="listing-loc">📍 ${l.city}</div>
+      </div>
+      <button class="wa-btn" onclick="openWA('${l.wa}','${l.type} ${l.qty} madax $${l.price}')">📱 WhatsApp</button>
+    </div>`;
+  }).join('');
+}
+
+// ============ PAGES ============
+function goPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('on');
+  btn.classList.add('active');
+}
+
+// ============ ADMIN ============
+function doLogin() {
+  const v = document.getElementById('passInput').value;
+  if(v === 'suuqa2026') {
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminPanel').classList.remove('admin-hidden');
+    document.getElementById('adminPanel').classList.add('admin-visible');
+  } else {
+    alert('❌ Password khaldan!');
+  }
+}
+
+function doLogout() {
+  document.getElementById('adminLogin').style.display = 'block';
+  document.getElementById('adminPanel').classList.add('admin-hidden');
+  document.getElementById('adminPanel').classList.remove('admin-visible');
+  document.getElementById('passInput').value = '';
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 3000);
+}
+
+function savePrice() {
+  const city = document.getElementById('aCity').value;
+  const keys = ['ow','oy','rw','ry','dg','hl','uk'];
+  const ids =  ['f_ow','f_oy','f_rw','f_ry','f_dg','f_hl','f_uk'];
+
+  // Save previous
+  prevPrices[city] = {...prices[city]};
+
+  let changed = false;
+  keys.forEach((k,i) => {
+    const v = parseFloat(document.getElementById(ids[i]).value);
+    if(!isNaN(v) && v > 0) {
+      prices[city][k] = v;
+      changed = true;
+    }
+  });
+
+  if(!changed) { alert('Wax ku qor!'); return; }
+
+  localStorage.setItem('sgd2_prices', JSON.stringify(prices));
+  localStorage.setItem('sgd2_prev', JSON.stringify(prevPrices));
+
+  // Clear inputs
+  ids.forEach(id => document.getElementById(id).value = '');
+
+  // Refresh if same city
+  if(city === activeCity) {
+    buildSummary();
+    buildPriceTable(city);
+  }
+  buildTicker();
+  showToast();
+}
+
+function saveNews() {
+  const city = document.getElementById('nCity').value;
+  const text = document.getElementById('nText').value.trim();
+  if(!text){ alert('Farriin ku qor!'); return; }
+  const now = new Date();
+  const item = {city, text, time:`${pad(now.getHours())}:${pad(now.getMinutes())}`};
+  newsArr.unshift(item);
+  localStorage.setItem('sgd2_news', JSON.stringify(newsArr));
+  document.getElementById('nText').value = '';
+  buildNews();
+  showToast();
+}
+
+function saveListing() {
+  const type = document.getElementById('lType').value;
+  const qty = document.getElementById('lQty').value;
+  const price = document.getElementById('lPrice').value;
+  const wa = document.getElementById('lWA').value.trim();
+  const city = document.getElementById('lCity').value;
+  if(!qty||!price||!wa){ alert('Dhamaan buuxi!'); return; }
+  listArr.unshift({type,qty,price,wa,city});
+  localStorage.setItem('sgd2_list', JSON.stringify(listArr));
+  document.getElementById('lQty').value='';
+  document.getElementById('lPrice').value='';
+  document.getElementById('lWA').value='';
+  buildListings();
+  showToast();
+}
+
+function openWA(num, msg) {
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent('Suuqa Gobolada Dhexe:\n'+msg)}`, '_blank');
+}
+
+init();
+</script>
+</body>
+</html>
