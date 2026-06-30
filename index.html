@@ -40,3 +40,56 @@
 <div class="topbar">
   <div>Isniin, 29 Jun 2026</div>
 </div>
+<div class="ticker"><div class="ticker-track" id="ticker"></div></div>
+<nav>
+  <div class="logo">SGD <span style="color:#c8a951">SUUQA</span></div>
+  <a href="#" class="active">Suuqa</a>
+  <a href="#">Wararka</a>
+  <a href="#">Qiimaha</a>
+  <a href="#">Magaalooyinka</a>
+  <a href="admin.html" style="margin-left:auto;background:#e31837;padding:6px 14px;border-radius:3px">Admin</a>
+</nav>
+<div class="breaking">
+  <span style="background:white;color:#e31837;padding:2px 8px;font-weight:900;font-size:11px;border-radius:2px">WARARKA</span>
+  <span>Qiimaha Gaamaha wuu kordhi doonaa toddobaadka dambe saameynta roobabka Galmudug</span>
+</div>
+<div class="hero"</div>
+</div>
+<script>
+const cities = ['Gaalkacyo','Dhuusamarreeb','Cadaado','Guriceel'];
+const priceData = {
+  Gaalkacyo: [
+    {icon:'🐐',name:'Orgi Wayn',price:105,change:0.0},
+    {icon:'🐐',name:'Orgi Yar',price:38,change:2.7},
+    {icon:'🐑',name:'Ri Wayn',price:68,change:-1.4},
+    {icon:'🐄',name:'Geel',price:650,change:2.1}
+  ],
+  Dhuusamarreeb: [
+    {icon:'🐐',name:'Orgi Wayn',price:98,change:3.1},
+    {icon:'🐄',name:'Geel',price:650,change:2.0}
+  ],
+  Cadaado: [
+    {icon:'🐐',name:'Orgi Wayn',price:95,change:-1.0},
+    {icon:'🐄',name:'Geel',price:620,change:1.5}
+  ],
+  Guriceel: [
+    {icon:'🐐',name:'Orgi Wayn',price:100,change:0.5}
+  ]
+};
+function renderTable(city) {
+  const data = priceData[city] || [];
+  document.getElementById('priceBody').innerHTML = data.map(r => {
+    const up = r.change >= 0;
+    return `<tr style="border-bottom:1px solid #1f2937"><td style="padding:10px">${r.icon} ${r.name}</td><td style="padding:10px;font-weight:700">$${r.price}</td><td style="padding:10px;color:${up?'#00c853':'#ff1744'}">${up?'▲':'▼'} ${Math.abs(r.change)}%</td></tr>`;
+  }).join('');
+}
+function buildTabs() {
+  document.getElementById('cityTabs').innerHTML = cities.map(c =>
+    `<button onclick="renderTable('${c}')" style="padding:6px 14px;margin-right:6px;border:1px solid #1f2937;background:transparent;color:#94a3b8;border-radius:3px">${c}</button>`
+  ).join('');
+}
+buildTabs();
+renderTable('Gaalkacyo');
+</script>
+</body>
+</html>
